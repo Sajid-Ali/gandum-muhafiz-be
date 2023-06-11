@@ -6,84 +6,136 @@ const jwt = require("jsonwebtoken");
 // Assigning users to the variable User
 const User = db.users;
 
-//signing a user up
-//hashing users password before its saved to the database with bcrypt
-const signup = async (req, res) => {
+const findAllUser = async (req, res) => {
   try {
-    const { userName, email, password } = req.body;
-    const data = {
-      userName,
-      email,
-      password: await bcrypt.hash(password, 10),
-    };
-    //saving the user
-    const user = await User.create(data);
+    const users = await User.findAll();
 
-    //if user details is captured
-    //generate token with the user's id and the secretKey in the env file
-    // set cookie with the token generated
-    if (user) {
-      let token = jwt.sign({ id: user.id }, process.env.secretKey, {
-        expiresIn: 1 * 24 * 60 * 60 * 1000,
-      });
-
-      res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-      console.log("user", JSON.stringify(user, null, 2));
-      console.log(token);
-      //send users details
-      return res.status(201).send(user);
-    } else {
-      return res.status(409).send("Details are not correct");
-    }
+    res.status(200).json({
+      status: "success",
+      results: users.length,
+      users,
+    });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
 };
 
-//login authentication
-
-const login = async (req, res) => {
+const createUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const payload = req.body;
 
-    //find a user by their email
-    const user = await User.findOne({
-      where: {
-        email: email,
+    const user = await User.create(payload);
+
+    res.status(201).json({
+      status: "success",
+      data: {
+        user,
       },
     });
-
-    //if user email is found, compare password with bcrypt
-    if (user) {
-      const isSame = await bcrypt.compare(password, user.password);
-
-      //if password is the same
-      //generate token with the user's id and the secretKey in the env file
-
-      if (isSame) {
-        let token = jwt.sign({ id: user.id }, process.env.secretKey, {
-          expiresIn: 1 * 24 * 60 * 60 * 1000,
-        });
-
-        //if password matches wit the one in the database
-        //go ahead and generate a cookie for the user
-        res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-        console.log("user", JSON.stringify(user, null, 2));
-        console.log(token);
-        //send user data
-        return res.status(201).send(user);
-      } else {
-        return res.status(401).send("Authentication failed");
-      }
-    } else {
-      return res.status(401).send("Authentication failed");
-    }
   } catch (error) {
-    console.log(error);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        status: "failed",
+        message: "User already exists",
+      });
+    }
+
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const result = await User.update(
+      { ...req.body, updatedAt: Date.now() },
+      {
+        where: {
+          id: req.params.userId,
+        },
+      }
+    );
+
+    if (result[0] === 0) {
+      return res.status(404).json({
+        status: "failed",
+        message: `User not found with ID: ${req.params.userId}`,
+      });
+    }
+
+    const user = await User.findByPk(req.params.userId);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const findUser = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "failed",
+        message: `User not found with ID: ${req.params.userId}`,
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const result = await User.destroy({
+      where: { id: req.params.userId },
+      force: true,
+    });
+
+    if (result === 0) {
+      return res.status(404).json({
+        status: "failed",
+        message: `User not found with ID: ${req.params.userId}`,
+      });
+    }
+
+    res.status(204).json();
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
 };
 
 module.exports = {
-  signup,
-  login,
+  findUser,
+  createUser,
+  updateUser,
+  findAllUser,
+  deleteUser,
 };

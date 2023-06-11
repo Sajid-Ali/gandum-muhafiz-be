@@ -32,6 +32,10 @@ db.sequelize.sync({ force: true }).then(() => {
 app.use("/api/retailer", retailerRoutes);
 app.use("/api/users", userRoutes);
 
+app.get("/", (request, response) => {
+  response.json({ info: "Gandum Muhafiz API" });
+});
+
 AdminBro.registerAdapter(AdminBroSequelize);
 const adminBro = new AdminBro({
   databases: [db],
@@ -45,5 +49,14 @@ const adminBro = new AdminBro({
 const router = AdminBroExpress.buildRouter(adminBro);
 app.use(adminBro.options.rootPath, router);
 
+app.all("*", (req, res) => {
+  res.status(404).json({
+    status: "Failed",
+    message: `Route: ${req.originalUrl} does not exist!!!`,
+  });
+});
+
 //listening to server connection
-app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Gandum Muhafiz app is running on port:: ${PORT}`)
+);

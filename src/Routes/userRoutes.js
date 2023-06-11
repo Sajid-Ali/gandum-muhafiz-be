@@ -1,16 +1,15 @@
 //importing modules
 const express = require("express");
 
-const retailerController = require("../controllers/retailerController");
-const { signup, login } = retailerController;
+const userController = require("../controllers/userController");
+const { findUser, createUser, updateUser, findAllUser, deleteUser } =
+  userController;
 
 const router = express.Router();
 
 //signup endpoint
 //passing the middleware function to the signup
-router.post("/signup", signup);
-
-//login route
-router.post("/login", login);
+router.route("/").get(findAllUser).post(createUser);
+router.route("/:userId").get(findUser).patch(updateUser).delete(deleteUser);
 
 module.exports = router;
