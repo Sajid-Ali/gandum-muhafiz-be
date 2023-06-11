@@ -1,5 +1,5 @@
 //importing modules
-const db = require("../Models");
+const db = require("../models");
 //Assigning db.users to User variable
 const User = db.users;
 

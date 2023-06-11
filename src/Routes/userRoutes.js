@@ -1,7 +1,7 @@
 //importing modules
 const express = require("express");
 
-const retailerController = require("../Controllers/retailerController");
+const retailerController = require("../controllers/retailerController");
 const { signup, login } = retailerController;
 
 const router = express.Router();

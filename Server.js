@@ -4,9 +4,13 @@ const sequelize = require("sequelize");
 const dotenv = require("dotenv").config();
 const cookieParser = require("cookie-parser");
 
-const db = require("./src/Models");
-const userRoutes = require("./src/Routes/userRoutes");
-const retailerRoutes = require("./src/Routes/retailerRoutes");
+const AdminBro = require("admin-bro");
+const AdminBroExpress = require("@admin-bro/express");
+const AdminBroSequelize = require("@admin-bro/sequelize");
+
+const db = require("./src/models");
+const userRoutes = require("./src/routes/userRoutes");
+const retailerRoutes = require("./src/routes/retailerRoutes");
 
 //setting up your port
 const PORT = process.env.PORT || 8080;
@@ -27,6 +31,15 @@ db.sequelize.sync({ force: true }).then(() => {
 //routes for the user API
 app.use("/api/retailer", retailerRoutes);
 app.use("/api/users", userRoutes);
+
+AdminBro.registerAdapter(AdminBroSequelize);
+const adminBro = new AdminBro({
+  databases: [db],
+  rootPath: "/admin",
+});
+
+const router = AdminBroExpress.buildRouter(adminBro);
+app.use(adminBro.options.rootPath, router);
 
 //listening to server connection
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
