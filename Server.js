@@ -36,6 +36,10 @@ AdminBro.registerAdapter(AdminBroSequelize);
 const adminBro = new AdminBro({
   databases: [db],
   rootPath: "/admin",
+  branding: {
+    companyName: "Gandum Muhafiz",
+  },
+  logo: false,
 });
 
 const router = AdminBroExpress.buildRouter(adminBro);
