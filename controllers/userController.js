@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 
 // Assigning users to the variable User
 const User = db.user;
-console.log("🚀 ~ file: userController.js:8 ~ db:", db)
-console.log("🚀 ~ file: userController.js:8 ~ User:", User)
 
 const findAllUser = async (req, res) => {
   try {
