@@ -8,9 +8,9 @@ const AdminBro = require("admin-bro");
 const AdminBroExpress = require("@admin-bro/express");
 const AdminBroSequelize = require("@admin-bro/sequelize");
 
-const db = require("./src/models");
-const userRoutes = require("./src/routes/userRoutes");
-const retailerRoutes = require("./src/routes/retailerRoutes");
+const db = require("./models");
+const userRoutes = require("./routes/userRoutes");
+const retailerRoutes = require("./routes/retailerRoutes");
 
 //setting up your port
 const PORT = process.env.PORT || 8080;

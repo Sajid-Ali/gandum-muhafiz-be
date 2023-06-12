@@ -4,7 +4,7 @@ const db = require("../models");
 const jwt = require("jsonwebtoken");
 
 // Assigning retailers to the variable Retailer
-const Retailer = db.retailers;
+const Retailer = db.retailer;
 
 //signing a retailer up
 //hashing retailers password before its saved to the database with bcrypt
