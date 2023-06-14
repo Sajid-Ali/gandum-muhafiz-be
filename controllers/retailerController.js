@@ -10,10 +10,8 @@ const Retailer = db.retailer;
 //hashing retailers password before its saved to the database with bcrypt
 const signup = async (req, res) => {
   try {
-    const { retailerName, email, password } = req.body;
     const data = {
-      retailerName,
-      email,
+      ...req.body,
       password: await bcrypt.hash(password, 10),
     };
     //saving the retailer
