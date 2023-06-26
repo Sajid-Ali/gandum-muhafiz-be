@@ -12,7 +12,7 @@ const signup = async (req, res) => {
   try {
     const data = {
       ...req.body,
-      password: await bcrypt.hash(password, 10),
+      password: await bcrypt.hash(req.body.password, 10),
     };
     //saving the retailer
     const retailer = await Retailer.create(data);
@@ -29,7 +29,7 @@ const signup = async (req, res) => {
       console.log("retailer", JSON.stringify(retailer, null, 2));
       console.log(token);
       //send retailers details
-      return res.status(201).send(retailer);
+      return res.status(201).send({ retailer, token });
     } else {
       return res.status(409).send("Details are not correct");
     }
