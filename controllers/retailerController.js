@@ -34,7 +34,17 @@ const signup = async (req, res) => {
       return res.status(409).send("Details are not correct");
     }
   } catch (error) {
-    console.log(error);
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        status: "failed",
+        message: "User already exists",
+      });
+    }
+
+    res.status(500).json({
+      status: "error",
+      message: error?.message,
+    });
   }
 };
 
@@ -45,7 +55,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     //find a retailer by their email
-    const retailer = await Retailer.findOne({
+    let retailer = await Retailer.findOne({
       where: {
         email: email,
       },
@@ -69,7 +79,8 @@ const login = async (req, res) => {
         console.log("retailer", JSON.stringify(retailer, null, 2));
         console.log(token);
         //send retailer data
-        return res.status(201).send(retailer);
+        delete retailer.password;
+        return res.status(201).send({ user: retailer, token });
       } else {
         return res.status(401).send("Authentication failed");
       }
@@ -77,7 +88,10 @@ const login = async (req, res) => {
       return res.status(401).send("Authentication failed");
     }
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: error?.message,
+    });
   }
 };
 
