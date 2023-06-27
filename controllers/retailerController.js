@@ -6,6 +6,23 @@ const jwt = require("jsonwebtoken");
 // Assigning retailers to the variable Retailer
 const Retailer = db.retailer;
 
+const findAllRetailer = async (req, res) => {
+  try {
+    const retailers = await Retailer.findAll();
+
+    res.status(200).json({
+      status: "success",
+      results: retailers.length,
+      retailers,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 //signing a retailer up
 //hashing retailers password before its saved to the database with bcrypt
 const signup = async (req, res) => {
@@ -96,6 +113,7 @@ const login = async (req, res) => {
 };
 
 module.exports = {
-  signup,
   login,
+  signup,
+  findAllRetailer,
 };

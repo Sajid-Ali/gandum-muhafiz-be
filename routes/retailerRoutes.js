@@ -4,15 +4,14 @@ const express = require("express");
 const auth = require("../middlewares/auth");
 const retailerController = require("../controllers/retailerController");
 
-const { signup, login } = retailerController;
+const { signup, login, findAllRetailer } = retailerController;
 
 const router = express.Router();
-
-//signup endpoint
-//passing the middleware function to the signup
+// Get All retailer
+router.route("/").get(findAllRetailer);
+// signup endpoint
 router.post("/signup", signup);
-
-//login route
+// login route
 router.post("/login", login);
 
 module.exports = router;
