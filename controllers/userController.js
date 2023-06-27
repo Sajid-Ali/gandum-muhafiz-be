@@ -31,9 +31,7 @@ const createUser = async (req, res) => {
 
     res.status(201).json({
       status: "success",
-      data: {
-        user,
-      },
+      user,
     });
   } catch (error) {
     if (error.name === "SequelizeUniqueConstraintError") {
